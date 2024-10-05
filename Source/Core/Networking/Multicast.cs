@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Rabid
 {
 	[AttributeUsage(System.AttributeTargets.Method)]
-	public class RunOnClient : System.Attribute
+	public class Multicast : System.Attribute
 	{
-		public RunOnClient()
+		public Multicast()
 		{
 
 		}

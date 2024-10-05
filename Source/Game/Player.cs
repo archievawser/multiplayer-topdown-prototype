@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Rabid
 {
+	[RegisterEntityType(name: "Player")]
 	class Player : Pawn
 	{
 		public override void Prepare()
@@ -58,14 +59,23 @@ namespace Rabid
 			Transform.Position += direction * dt * 50f;
 			Camera.Current.Transform.Translation = Vector3.Lerp(Camera.Current.Transform.Translation, -new Vector3(Transform.Position, 0), 10f * dt);
 
-			SetPosition(Transform.Position);
+			if (World.Instance.Networker.Role == NetRole.Client)
+				SetServerPosition(Transform.Position);
 			
 			base.Update(dt);
 		}
 
 		[RunOnServer]
-		public void SetPosition(Vector2 position) {}
-		public unsafe void SetPosition_Impl(NetBinaryReader data)
+		public void SetServerPosition(Vector2 position) {}
+		public void SetServerPosition_Impl(NetBinaryReader data)
+		{
+			Transform.Position = data.ReadVector2();
+			BroadcastPosition(Transform.Position);
+		}
+
+		[Multicast]
+		public void BroadcastPosition(Vector2 position) { }
+		public void BroadcastPosition_Impl(NetBinaryReader data) 
 		{
 			Transform.Position = data.ReadVector2();
 		}

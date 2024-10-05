@@ -20,5 +20,9 @@ namespace Rabid
 			Write(data.X);
 			Write(data.Y);
 		}
+
+		public void Write(NetMessageType data) => Write((byte)data);
+
+		public void Write(NetId data) => Write(data.Value);
 	}
 }

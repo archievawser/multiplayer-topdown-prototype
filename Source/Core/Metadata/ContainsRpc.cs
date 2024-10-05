@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Rabid
 {
-	public enum NetMessageType : byte
+	[AttributeUsage(System.AttributeTargets.Class)]
+	public class ContainsRpc : System.Attribute
 	{
-		UnboundRpc,
-		BoundRpc,
-		Genesis
+		public ContainsRpc()
+		{}
 	}
 }

@@ -45,7 +45,7 @@ namespace Rabid
 
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static unsafe void MulticastRpcPrefix(dynamic[] __args, ref MethodBase __originalMethod)
+		public static unsafe void MulticastRpcPrefix(dynamic[] __args, MethodBase __originalMethod)
 		{
 			MemoryStream stream = new MemoryStream();
 			NetBinaryWriter writer = new NetBinaryWriter(stream);
@@ -68,7 +68,7 @@ namespace Rabid
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static unsafe void RunOnServerRpcPrefix(dynamic[] __args, ref MethodBase __originalMethod)
+		public static unsafe void RunOnServerRpcPrefix(dynamic[] __args, MethodBase __originalMethod)
 		{
 			MemoryStream stream = new MemoryStream();
 			NetBinaryWriter writer = new NetBinaryWriter(stream);

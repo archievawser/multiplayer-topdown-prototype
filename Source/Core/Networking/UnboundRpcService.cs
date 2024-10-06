@@ -22,13 +22,15 @@ namespace Rabid
 
 		public static void PatchRpcs()
 		{
+			int rpcIndex = 0;
+
 			foreach (Type type in Application.Instance.GetType().Assembly.GetTypes())
 			{
 				if (type.GetCustomAttribute<ContainsRpc>() != null)
 				{
 					foreach (MethodInfo method in type.GetMethods())
 					{
-						switch(GetRpcType(method))
+						switch (GetRpcType(method))
 						{
 							case RpcType.RunOnServer:
 								Application.Instance.Harmony.Patch(method, new HarmonyMethod(RunOnServerRpcPrefix));
@@ -37,7 +39,15 @@ namespace Rabid
 							case RpcType.Multicast:
 								Application.Instance.Harmony.Patch(method, new HarmonyMethod(MulticastRpcPrefix));
 								break;
+
+							case RpcType.None:
+								continue;
 						}
+
+						RpcRegistry[rpcIndex] = (RpcImplementation)Delegate.CreateDelegate(typeof(RpcImplementation), typeof(UnboundRpcService).GetMethod(method.Name + "_Impl"));
+						RpcIdentifierRegistry[method.Name] = rpcIndex;
+
+						rpcIndex++;
 					}
 				}
 			}
@@ -89,6 +99,7 @@ namespace Rabid
 
 			return;
 		}
+
 		private static RpcType GetRpcType(MethodInfo method)
 		{
 			if (method.GetCustomAttribute<RunOnServer>() != null)

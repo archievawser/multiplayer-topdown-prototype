@@ -25,7 +25,7 @@ namespace Rabid
 			for (int i = -11; i < 11; i++) for (int j = -6; j < 6; j++)
 				mSheet.Edit(0, new GridCoord(i, j), new GridCoord(4, 0));
 
-			World.Instance.Networker.Connect(76561199090599358);
+			World.Instance.Networker.Connect();
 
 			base.Start();
 		}

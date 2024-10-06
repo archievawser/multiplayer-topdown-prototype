@@ -16,6 +16,7 @@ namespace Rabid.Netcode.Steam
 		{
 			base.OnConnected(connection, info);
 
+			RpcTesting.PossessPlayer(100);
 			Trace.WriteLine(connection.Id + " connected to server");
 		}
 

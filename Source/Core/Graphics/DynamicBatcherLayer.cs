@@ -144,6 +144,9 @@ namespace Rabid
 
 		public void Draw()
 		{
+			if (mElements.Count == 0)
+				return;
+
 			Rebuild();
 
 			GraphicsDevice device = Application.Instance.GraphicsDeviceManager.GraphicsDevice;

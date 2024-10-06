@@ -14,7 +14,7 @@ namespace Rabid
 		public override void Prepare()
 		{
 			Batcher = AddEntity(new DynamicBatcherLayer(AssetManager<Effect>.Retreive("Effects/FlatTextured")));
-			mPlayers = AddEntity(new Player());
+			//mPlayers = AddEntity(new Player());
 			mSheet = AddEntity(new Tilesheet(AssetManager<Effect>.Retreive("Effects/FlatTextured")));
 
 			base.Prepare();
@@ -37,7 +37,7 @@ namespace Rabid
 		}
 
 		public DynamicBatcherLayer Batcher;
-		private Player mPlayers;
+		//private Player mPlayers;
 		private Tilesheet mSheet;
 	}
 }

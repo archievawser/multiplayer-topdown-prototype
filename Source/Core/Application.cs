@@ -33,6 +33,8 @@ namespace Rabid
 			SteamClient.Init(480);
 			SteamNetworkingUtils.InitRelayNetworkAccess();
 
+			UnboundRpcService.PatchRpcs();
+
 			Camera = new Camera(1920, 1080);
 
 			const string atlasName = "Textures/Atlas";

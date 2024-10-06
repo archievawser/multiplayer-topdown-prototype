@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,12 +17,12 @@ namespace Rabid
 
 		public void Write(Vector2 data)
 		{
-			Write(data.X);
-			Write(data.Y);
+			base.Write(data.X);
+			base.Write(data.Y);
 		}
 
 		public void Write(NetMessageType data) => Write((byte)data);
 
-		public void Write(NetId data) => Write(data.Value);
+		public void Write(NetId data) => base.Write(data.Value);
 	}
 }

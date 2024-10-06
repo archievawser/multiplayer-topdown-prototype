@@ -2,6 +2,7 @@
 using Steamworks.Data;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,17 +14,21 @@ namespace Rabid.Netcode.Steam
 	{
 		public override void OnConnected(Connection connection, ConnectionInfo info)
 		{
-			connection.Accept();
+			base.OnConnected(connection, info);
+
+			Trace.WriteLine(connection.Id + " connected to server");
 		}
 
 		public override void OnConnecting(Connection connection, ConnectionInfo info)
 		{
+			base.OnConnecting(connection, info);
 
+			Trace.WriteLine(connection.Id + " connecting to server");
 		}
 
 		public override void OnDisconnected(Connection connection, ConnectionInfo info)
 		{
-
+			base.OnDisconnected(connection, info);
 		}
 
 		public override unsafe void OnMessage(Connection connection, NetIdentity identity, nint data, int size, long messageNum, long recvTime, int channel)
@@ -57,6 +62,8 @@ namespace Rabid.Netcode.Steam
 						break;
 					}
 			}
+
+
 		}
 
 		public NetDevice Networker;

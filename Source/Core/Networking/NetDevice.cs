@@ -2,6 +2,7 @@
 using Steamworks.Data;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -15,7 +16,7 @@ namespace Rabid.Netcode.Steam
 		public void Connect()
 		{
 			Role = NetRole.Host;
-			ServerManager = SteamNetworkingSockets.CreateNormalSocket<ServerSocket>(NetAddress.AnyIp(21893));
+			ServerManager = SteamNetworkingSockets.CreateRelaySocket<ServerSocket>();
 			ServerManager.Networker = this;
 		}
 

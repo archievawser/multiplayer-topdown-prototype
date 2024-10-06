@@ -55,7 +55,7 @@ namespace Rabid
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void RosRpcPrefix(Entity __instance, dynamic[] __args, ref MethodBase __originalMethod)
+		public static void RosRpcPrefix(Entity __instance, dynamic[] __args, MethodBase __originalMethod)
 		{
 			MemoryStream stream = new MemoryStream();
 			NetBinaryWriter writer = new NetBinaryWriter(stream);
@@ -162,6 +162,7 @@ namespace Rabid
 
 				// add rpc implementation (orig name + "_Impl") 
 				RpcRegistry[rpcIndex] = (UnboundRpcService.RpcImplementation)Delegate.CreateDelegate(typeof(UnboundRpcService.RpcImplementation), this, GetType().GetMethod(method.Name + "_Impl"));
+				RpcIdentifierRegistry[method.Name] = rpcIndex;
 
 				rpcIndex++;
 			}

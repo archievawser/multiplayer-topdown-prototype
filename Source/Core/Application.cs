@@ -31,6 +31,7 @@ namespace Rabid
 		protected override void Initialize()
 		{
 			SteamClient.Init(480);
+			SteamNetworkingUtils.InitRelayNetworkAccess();
 
 			Camera = new Camera(1920, 1080);
 
@@ -47,6 +48,7 @@ namespace Rabid
 		{
 			GraphicsDeviceManager.GraphicsDevice.Clear(Color.Black);
 
+			SteamClient.RunCallbacks();
 			GameWorld.PreUpdate();
 			GameWorld.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 			GameWorld.PostUpdate();

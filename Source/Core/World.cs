@@ -57,7 +57,11 @@ namespace Rabid
 
 		public void PreUpdate() => CurrentScene.PreUpdate();
 
-		public void Update(float dt) => CurrentScene.Update(dt);
+		public void Update(float dt) 
+		{
+			Networker.Poll();
+			CurrentScene.Update(dt);
+		}
 
 		public void PostUpdate() => CurrentScene.PostUpdate();
 

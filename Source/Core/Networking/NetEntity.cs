@@ -12,13 +12,12 @@ using System.Threading.Tasks;
 
 namespace Rabid
 {
-	// TODO: create NetEntity sub class to avoid networking overhead
-	public unsafe class Entity : IGameEvents
+	public unsafe class NetEntity : Entity
 	{
-		public Entity()
-		{}
+		public NetEntity()
+		{ }
 
-		public static Entity Resolve(NetId id)
+		public static NetEntity Resolve(NetId id)
 		{
 			return mEntityNetRegistry[id];
 		}
@@ -29,12 +28,12 @@ namespace Rabid
 			mEntityNetRegistry.Add(id, this);
 		}
 
-		public virtual void Prepare()
+		public override void Prepare()
 		{
-			foreach(Component component in mComponents.Values)
+			foreach (Component component in mComponents.Values)
 			{
 #if DEBUG
-				foreach(RequiresComponent attrib in component.GetType().GetCustomAttributes<RequiresComponent>())
+				foreach (RequiresComponent attrib in component.GetType().GetCustomAttributes<RequiresComponent>())
 				{
 					if (!mComponents.ContainsKey(attrib.ComponentType))
 					{
@@ -55,7 +54,7 @@ namespace Rabid
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void RosRpcPrefix(Entity __instance, dynamic[] __args, MethodBase __originalMethod)
+		public static void RosRpcPrefix(NetEntity __instance, dynamic[] __args, MethodBase __originalMethod)
 		{
 			MemoryStream stream = new MemoryStream();
 			NetBinaryWriter writer = new NetBinaryWriter(stream);
@@ -63,6 +62,8 @@ namespace Rabid
 			writer.Write(NetMessageType.BoundRpc);
 			writer.Write(__instance.Id.Value);
 			writer.Write(__instance.RpcIdentifierRegistry[__originalMethod.Name]);
+
+			Trace.WriteLine("Sent position as " + __instance.Id.Value);
 
 			foreach (var v in __args)
 			{
@@ -83,31 +84,7 @@ namespace Rabid
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void RocRpcPrefix(Entity __instance, dynamic[] __args)
-		{
-			MemoryStream stream = new MemoryStream();
-			NetBinaryWriter writer = new NetBinaryWriter(stream);
-			writer.Write(__instance.Id.Value);
-			writer.Write(1);
-			foreach(var v in __args)
-			{
-				writer.Write(v);
-			}
-			writer.Flush();
-
-			unsafe
-			{
-				fixed (byte* bufferRaw = stream.GetBuffer())
-				{
-					World.Instance.Networker.SendToServer((IntPtr)bufferRaw, (int)stream.Length);
-				}
-			}
-
-			return;
-		}		
-		
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void MulticastRpcPrefix(Entity __instance, dynamic[] __args, ref MethodBase __originalMethod)
+		public static void MulticastRpcPrefix(NetEntity __instance, dynamic[] __args, MethodBase __originalMethod)
 		{
 			MemoryStream stream = new MemoryStream();
 			NetBinaryWriter writer = new NetBinaryWriter(stream);
@@ -115,7 +92,7 @@ namespace Rabid
 			writer.Write(__instance.Id.Value);
 			writer.Write(__instance.RpcIdentifierRegistry[__originalMethod.Name]);
 
-			foreach(var v in __args)
+			foreach (var v in __args)
 			{
 				writer.Write(v);
 			}
@@ -127,6 +104,35 @@ namespace Rabid
 				fixed (byte* bufferRaw = stream.GetBuffer())
 				{
 					World.Instance.Networker.SendToAllClients((IntPtr)bufferRaw, (int)stream.Length);
+				}
+			}
+
+			return;
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public static void RunOnClientRpcPrefix(NetEntity __instance, dynamic[] __args, MethodBase __originalMethod)
+		{
+			MemoryStream stream = new MemoryStream();
+			NetBinaryWriter writer = new NetBinaryWriter(stream);
+			writer.Write(NetMessageType.BoundRpc);
+			writer.Write(__instance.Id.Value);
+			writer.Write(__instance.RpcIdentifierRegistry[__originalMethod.Name]);
+
+			// start at 1 to account for the first arg (target steam id)
+			int i = 1;
+			for (; i < __args.Length; i++)
+			{
+				writer.Write(__args[i]);
+			}
+
+			writer.Flush();
+
+			unsafe
+			{
+				fixed (byte* bufferRaw = stream.GetBuffer())
+				{
+					World.Instance.Networker.SendToClient(__args[0], (IntPtr)bufferRaw, (int)stream.Length);
 				}
 			}
 
@@ -149,12 +155,16 @@ namespace Rabid
 				// check if RPC
 				if (method.GetCustomAttribute<RunOnServer>() != null)
 				{
-					SetupRunOnServerRpc(method, rpcIndex);
+					SetupRunOnServerRpc(method);
 				}
 				else if (method.GetCustomAttribute<Multicast>() != null)
 				{
-					SetupMulticastRpc(method, rpcIndex);
-				} 
+					SetupMulticastRpc(method);
+				}
+				else if (method.GetCustomAttribute<RunOnClient>() != null)
+				{
+					SetupRunOnClientRpc(method);
+				}
 				else
 				{
 					continue;
@@ -168,71 +178,25 @@ namespace Rabid
 			}
 		}
 
-		private void SetupRunOnServerRpc(MethodInfo method, int rpcId)
+		private void SetupRunOnServerRpc(MethodInfo method)
 		{
 			Application.Instance.Harmony.Patch(method, new HarmonyMethod(RosRpcPrefix));
-		}		
-		
-		private void SetupMulticastRpc(MethodInfo method, int rpcId)
+		}
+
+		private void SetupMulticastRpc(MethodInfo method)
 		{
 			Application.Instance.Harmony.Patch(method, new HarmonyMethod(MulticastRpcPrefix));
 		}
 
 		private void SetupRunOnClientRpc(MethodInfo method)
 		{
-			Application.Instance.Harmony.Patch(method, new HarmonyMethod(RocRpcPrefix));
+			Application.Instance.Harmony.Patch(method, new HarmonyMethod(RunOnClientRpcPrefix));
 		}
 
-		public virtual void Start()
-		{
-			foreach (Component component in mComponents.Values)
-			{
-				component.Start();
-			}
-		}		
-
-		public virtual void PreUpdate()
-		{
-			foreach (Component component in mComponents.Values)
-			{
-				component.PreUpdate();
-			}
-		}
-
-		public virtual void Update(float dt)
-		{
-			foreach(Component component in mComponents.Values)
-			{
-				component.Update(dt);
-			}
-		}
-		
-		public virtual void PostUpdate()
-		{
-			foreach (Component component in mComponents.Values)
-			{
-				component.PostUpdate();
-			}
-		}
-
-		public T AddComponent<T>(T component) where T : Component
-		{
-			component.ParentEntity = this;
-			mComponents.Add(typeof(T), component);
-			return component;
-		}
-
-		public T GetComponent<T>() where T : Component
-		{
-			return (T)mComponents[typeof(T)];
-		}
-
-		public BaseScene ParentScene;
 		public Dictionary<string, NetId> RpcIdentifierRegistry = new Dictionary<string, NetId>();
 		public Dictionary<NetId, UnboundRpcService.RpcImplementation> RpcRegistry = new Dictionary<NetId, UnboundRpcService.RpcImplementation>();
 		public NetId Id = IdHelper.GetNextId();
 		public bool IsLocallyOwned;
-		private static Dictionary<NetId, Entity> mEntityNetRegistry = new Dictionary<NetId, Entity>();
-		private Dictionary<Type, Component> mComponents = new Dictionary<Type, Component>();
+		private static Dictionary<NetId, NetEntity> mEntityNetRegistry = new Dictionary<NetId, NetEntity>();
 	}
 }

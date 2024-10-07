@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace Rabid
 				mSheet.Edit(0, new GridCoord(i, j), new GridCoord(4, 0));
 
 			World.Instance.Networker.Connect();
+			World.Instance.Networker.Connect(SteamClient.SteamId);
 
 			base.Start();
 		}

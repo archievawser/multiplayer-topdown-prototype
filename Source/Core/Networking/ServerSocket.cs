@@ -16,15 +16,18 @@ namespace Rabid.Netcode.Steam
 		{
 			base.OnConnected(connection, info);
 
-			RpcTesting.PossessPlayer(100);
-			Trace.WriteLine(connection.Id + " connected to server");
+			Networker.Connections[info.Identity.SteamId] = connection;
+
+			RpcTesting.PossessPlayer(info.Identity.SteamId, IdHelper.GetNextId());
+
+			Trace.WriteLine(info.Identity.SteamId + " has connected to our server");
 		}
 
 		public override void OnConnecting(Connection connection, ConnectionInfo info)
 		{
 			base.OnConnecting(connection, info);
 
-			Trace.WriteLine(connection.Id + " connecting to server");
+			Trace.WriteLine(info.Identity.SteamId + " is attempting to connect to our server");
 		}
 
 		public override void OnDisconnected(Connection connection, ConnectionInfo info)
@@ -58,13 +61,11 @@ namespace Rabid.Netcode.Steam
 						// the key of the RPC in the rpc entity's registry
 						NetId rpcId = reader.ReadByte();
 
-						Entity rpcObject = Entity.Resolve(rpcObjectId);
+						NetEntity rpcObject = NetEntity.Resolve(rpcObjectId);
 						rpcObject.RpcRegistry[rpcId](reader);
 						break;
 					}
 			}
-
-
 		}
 
 		public NetDevice Networker;

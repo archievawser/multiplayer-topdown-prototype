@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<widget width="100" height="100">
+	<panel top="90" left="90">
+		<image  />
+		<text></text>
+	</panel>
+</widget>

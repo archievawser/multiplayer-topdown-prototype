@@ -16,7 +16,7 @@ namespace Rabid
 	{
 		public override void Prepare()
 		{
-			Id = 0;
+			Trace.WriteLine("Player created");
 			Sprite = new SpriteComponent(new GridCoord(0, 0), new GridCoord(1, 2));
 			Transform = new TransformComponent();
 
@@ -28,16 +28,19 @@ namespace Rabid
 
 		public override void Update(float dt)
 		{
+			if (!IsLocallyOwned)
+				return;
+
 			Vector2 direction;
 			direction.X = (Input.IsKeyDown(Keys.D) ? 1 : 0) - (Input.IsKeyDown(Keys.A) ? 1 : 0);
 			direction.Y = (Input.IsKeyDown(Keys.W) ? 1 : 0) - (Input.IsKeyDown(Keys.S) ? 1 : 0);
 
 			float dirLengthSqr = direction.LengthSquared();
 
-            if(dirLengthSqr != 0)
-            {
+			if(dirLengthSqr != 0)
+			{
 				direction /= (float)Math.Sqrt(dirLengthSqr);
-            }
+			}
 
 			if(direction.X > 0)
 			{
@@ -70,7 +73,7 @@ namespace Rabid
 		public void SetServerPosition_Impl(NetBinaryReader data)
 		{
 			Transform.Position = data.ReadVector2();
-			BroadcastPosition(Transform.Position);
+			//BroadcastPosition(Transform.Position);
 		}
 
 		[Multicast]

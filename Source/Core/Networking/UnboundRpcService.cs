@@ -40,11 +40,15 @@ namespace Rabid
 								Application.Instance.Harmony.Patch(method, new HarmonyMethod(MulticastRpcPrefix));
 								break;
 
+							case RpcType.RunOnClient:
+								Application.Instance.Harmony.Patch(method, new HarmonyMethod(RunOnClientRpcPrefix));
+								break;
+
 							case RpcType.None:
 								continue;
 						}
 
-						RpcRegistry[rpcIndex] = (RpcImplementation)Delegate.CreateDelegate(typeof(RpcImplementation), typeof(UnboundRpcService).GetMethod(method.Name + "_Impl"));
+						RpcRegistry[rpcIndex] = (RpcImplementation)Delegate.CreateDelegate(typeof(RpcImplementation), type.GetMethod(method.Name + "_Impl"));
 						RpcIdentifierRegistry[method.Name] = rpcIndex;
 
 						rpcIndex++;
@@ -59,7 +63,7 @@ namespace Rabid
 		{
 			MemoryStream stream = new MemoryStream();
 			NetBinaryWriter writer = new NetBinaryWriter(stream);
-			writer.Write(NetMessageType.BoundRpc);
+			writer.Write(NetMessageType.UnboundRpc);
 			writer.Write(RpcIdentifierRegistry[__originalMethod.Name]);
 
 			foreach (var v in __args)
@@ -76,13 +80,38 @@ namespace Rabid
 
 			return;
 		}
+		
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public static unsafe void RunOnClientRpcPrefix(dynamic[] __args, MethodBase __originalMethod)
+		{
+			MemoryStream stream = new MemoryStream();
+			NetBinaryWriter writer = new NetBinaryWriter(stream);
+			writer.Write(NetMessageType.UnboundRpc);
+			writer.Write(RpcIdentifierRegistry[__originalMethod.Name]);
+
+			// start at 1 to account for the first arg (target steam id)
+			int i = 1;
+			for(; i < __args.Length; i++)
+			{
+				writer.Write(__args[i]);
+			}
+
+			writer.Flush();
+
+			fixed (byte* bufferRaw = stream.GetBuffer())
+			{
+				World.Instance.Networker.SendToClient(__args[0], (IntPtr)bufferRaw, (int)stream.Length);
+			}
+
+			return;
+		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static unsafe void RunOnServerRpcPrefix(dynamic[] __args, MethodBase __originalMethod)
 		{
 			MemoryStream stream = new MemoryStream();
 			NetBinaryWriter writer = new NetBinaryWriter(stream);
-			writer.Write(NetMessageType.BoundRpc);
+			writer.Write(NetMessageType.UnboundRpc);
 			writer.Write(RpcIdentifierRegistry[__originalMethod.Name]);
 
 			foreach (var v in __args)
@@ -107,6 +136,9 @@ namespace Rabid
 
 			if (method.GetCustomAttribute<Multicast>() != null)
 				return RpcType.Multicast;
+
+			if (method.GetCustomAttribute<Multicast>() != null)
+				return RpcType.RunOnClient;
 
 			// TODO: add run on client
 			return RpcType.None;

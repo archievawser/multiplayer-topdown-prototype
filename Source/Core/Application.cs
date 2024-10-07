@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Steamworks;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ namespace Rabid
 		{
 			if (Instance != null)
 				throw new Exception("Multiple Application instances instantiated");
+
+			Trace.WriteLine("Game start");
 
 			Content.RootDirectory = "Assets";
 			GraphicsDeviceManager = new GraphicsDeviceManager(this);

@@ -47,6 +47,7 @@ namespace Rabid.Netcode.Steam
 						NetId rpcId = reader.ReadByte();
 
 						UnboundRpcService.RpcRegistry[rpcId](reader);
+
 						break;
 					}
 				case NetMessageType.BoundRpc:
@@ -58,7 +59,7 @@ namespace Rabid.Netcode.Steam
 						// the key of the RPC in the rpc entity's registry
 						NetId rpcId = reader.ReadByte();
 
-						Entity rpcObject = Entity.Resolve(rpcObjectId);
+						NetEntity rpcObject = NetEntity.Resolve(rpcObjectId);
 						rpcObject.RpcRegistry[rpcId](reader);
 
 						break;

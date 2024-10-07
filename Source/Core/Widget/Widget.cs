@@ -6,13 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rabid
 {
-	public class Pawn : Entity
+	class Widget
 	{
-		public Pawn() 
-		{
-			Input = AddComponent(new InputComponent());
-		}
-
-		public InputComponent Input;
 	}
 }

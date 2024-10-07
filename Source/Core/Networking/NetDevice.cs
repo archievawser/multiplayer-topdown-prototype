@@ -15,15 +15,19 @@ namespace Rabid.Netcode.Steam
 	{
 		public void Connect()
 		{
-			Role = NetRole.Host;
-			ServerManager = SteamNetworkingSockets.CreateRelaySocket<ServerSocket>();
+			Role = NetRole.Server;
+			ServerManager = SteamNetworkingSockets.CreateNormalSocket<ServerSocket>(NetAddress.LocalHost(27939));
 			ServerManager.Networker = this;
 		}
 
 		public void Connect(SteamId target)
 		{
-			Role = NetRole.Client;
-			ClientManager = SteamNetworkingSockets.ConnectRelay<ClientSocket>(target);
+			if (Role == NetRole.Server)
+				Role = NetRole.Host;
+			else
+				Role = NetRole.Client;
+
+			ClientManager = SteamNetworkingSockets.ConnectNormal<ClientSocket>(NetAddress.LocalHost(27939));
 			ClientManager.Networker = this;
 		}
 
@@ -33,7 +37,8 @@ namespace Rabid.Netcode.Steam
 			{
 				ClientManager.Receive();
 			} 
-			else if(ServerManager != null)
+			
+			if(ServerManager != null)
 			{
 				ServerManager.Receive();
 			}
@@ -41,7 +46,7 @@ namespace Rabid.Netcode.Steam
 
 		public void SendToServer(IntPtr data, int size, SendType type = SendType.Unreliable)
 		{
-			if(Role != NetRole.Client)
+			if(Role == NetRole.Server)
 			{
 				throw new Exception("Server attempted to send data to itself");
 			}
@@ -56,12 +61,15 @@ namespace Rabid.Netcode.Steam
 				throw new Exception("Client attempted to send data directly to another client or itself");
 			}
 
-			NetConnection conn;
+			Connection conn;
 			bool targetClientExists = Connections.TryGetValue(clientId, out conn);
 
 			if(targetClientExists)
 			{
-				conn.Base.SendMessage(data, size, type);
+				conn.SendMessage(data, size, type);
+			} else
+			{
+				throw new Exception("Client " + clientId + " doesn't exist");
 			}
 		}
 
@@ -72,15 +80,15 @@ namespace Rabid.Netcode.Steam
 				throw new Exception("Client attempted to send data directly to all clients");
 			}
 
-			foreach(NetConnection conn in Connections.Values)
+			foreach(Connection conn in ServerManager.Connected)
 			{
-				conn.Base.SendMessage(data, size, type);
+				conn.SendMessage(data, size, type);
 			}
 		}
 
 		public NetRole Role;
 		public ClientSocket ClientManager;
 		public ServerSocket ServerManager;
-		public Dictionary<SteamId, NetConnection> Connections;
+		public Dictionary<SteamId, Connection> Connections = new Dictionary<SteamId, Connection>();
 	}
 }

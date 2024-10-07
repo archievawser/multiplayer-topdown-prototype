@@ -16,9 +16,20 @@ namespace Rabid.Netcode.Steam
 		{
 			base.OnConnected(connection, info);
 
+			Networker.ConnectionInfos[connection.Id] = info;
 			Networker.Connections[info.Identity.SteamId] = connection;
 
-			RpcTesting.PossessPlayer(info.Identity.SteamId, IdHelper.GetNextId());
+			NetId playerId = IdHelper.GetNextId();
+
+			foreach (var v in Networker.Connections)
+			{
+				if (v.Key == info.Identity.SteamId)
+					continue;
+
+				RpcTesting.PlayerJoined(v.Key, playerId);
+			}
+			
+			RpcTesting.PossessPlayer(info.Identity.SteamId, playerId);
 
 			Trace.WriteLine(info.Identity.SteamId + " has connected to our server");
 		}

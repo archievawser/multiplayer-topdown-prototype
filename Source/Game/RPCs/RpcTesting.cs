@@ -25,5 +25,19 @@ namespace Rabid
 			player.Prepare();
 			player.Start();
 		}
+
+		[RunOnClient]
+		public static void PlayerJoined(SteamId target, NetId playerId) { }
+		public static void PlayerJoined_Impl(NetBinaryReader args) 
+		{
+			NetId id = args.ReadByte();
+			Player player = new Player();
+			player.IsLocallyOwned = false;
+			player.SetNetIdentity(id);
+
+			World.Instance.CurrentScene.AddEntity(player);
+			player.Prepare();
+			player.Start();
+		}
 	}
 }

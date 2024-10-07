@@ -33,15 +33,8 @@ namespace Rabid.Netcode.Steam
 
 		public void Poll()
 		{
-			if(ClientManager != null)
-			{
-				ClientManager.Receive();
-			} 
-			
-			if(ServerManager != null)
-			{
-				ServerManager.Receive();
-			}
+			ClientManager?.Receive();
+			ServerManager?.Receive();
 		}
 
 		public void SendToServer(IntPtr data, int size, SendType type = SendType.Unreliable)
@@ -67,13 +60,10 @@ namespace Rabid.Netcode.Steam
 			if(targetClientExists)
 			{
 				conn.SendMessage(data, size, type);
-			} else
-			{
-				throw new Exception("Client " + clientId + " doesn't exist");
 			}
 		}
 
-		public void SendToAllClients(IntPtr data, int size, SendType type = SendType.Unreliable)
+		public void SendToAllClients(IntPtr data, int size, SteamId[] exceptions = null, SendType type = SendType.Unreliable)
 		{
 			if(Role == NetRole.Client)
 			{
@@ -82,6 +72,9 @@ namespace Rabid.Netcode.Steam
 
 			foreach(Connection conn in ServerManager.Connected)
 			{
+				if (exceptions?.Contains(ConnectionInfos[conn.Id].Identity.SteamId) ?? false)
+					continue;
+
 				conn.SendMessage(data, size, type);
 			}
 		}
@@ -90,5 +83,6 @@ namespace Rabid.Netcode.Steam
 		public ClientSocket ClientManager;
 		public ServerSocket ServerManager;
 		public Dictionary<SteamId, Connection> Connections = new Dictionary<SteamId, Connection>();
+		public Dictionary<uint, ConnectionInfo> ConnectionInfos = new Dictionary<uint, ConnectionInfo>();
 	}
 }

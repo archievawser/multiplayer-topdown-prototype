@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -137,7 +138,7 @@ namespace Rabid
 			if (method.GetCustomAttribute<Multicast>() != null)
 				return RpcType.Multicast;
 
-			if (method.GetCustomAttribute<Multicast>() != null)
+			if (method.GetCustomAttribute<RunOnClient>() != null)
 				return RpcType.RunOnClient;
 
 			// TODO: add run on client

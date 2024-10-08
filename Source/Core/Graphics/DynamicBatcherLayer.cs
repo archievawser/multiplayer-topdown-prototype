@@ -107,12 +107,15 @@ namespace Rabid
 			mVertices[vertexOffset + 2] = new VertexPositionTexture(new Vector3(positionMax.X, positionMin.Y, 0), new Vector2(uvMax.X, uvMax.Y));
 			mVertices[vertexOffset + 3] = new VertexPositionTexture(new Vector3(positionMin.X, positionMin.Y, 0), new Vector2(uvMin.X, uvMax.Y));
 
-			mIndices[indexOffset] = (uint)indexOffset;
-			mIndices[indexOffset + 1] = ((uint)indexOffset + 1);
-			mIndices[indexOffset + 2] = ((uint)indexOffset + 2);
-			mIndices[indexOffset + 3] = ((uint)indexOffset + 2);
-			mIndices[indexOffset + 4] = ((uint)indexOffset + 3);
-			mIndices[indexOffset + 5] = ((uint)indexOffset);
+			mIndices[indexOffset] = (uint)vertexOffset;
+			mIndices[indexOffset + 1] = ((uint)vertexOffset + 1);
+			mIndices[indexOffset + 2] = ((uint)vertexOffset + 2);
+			mIndices[indexOffset + 3] = ((uint)vertexOffset + 2);
+			mIndices[indexOffset + 4] = ((uint)vertexOffset + 3);
+			mIndices[indexOffset + 5] = ((uint)vertexOffset);
+
+			if (elementIndex == 1)
+				elementIndex = 1;
 		}
 
 		private void EnsureBufferSizes()

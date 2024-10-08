@@ -13,21 +13,17 @@ namespace Rabid.Netcode.Steam
 {
 	public class NetDevice
 	{
-		public void Connect()
+		public void Host()
 		{
-			Role = NetRole.Server;
-			ServerManager = SteamNetworkingSockets.CreateNormalSocket<ServerSocket>(NetAddress.LocalHost(27939));
+			Role = NetRole.Host;
+			ServerManager = SteamNetworkingSockets.CreateRelaySocket<ServerSocket>();
 			ServerManager.Networker = this;
 		}
 
 		public void Connect(SteamId target)
 		{
-			if (Role == NetRole.Server)
-				Role = NetRole.Host;
-			else
-				Role = NetRole.Client;
-
-			ClientManager = SteamNetworkingSockets.ConnectNormal<ClientSocket>(NetAddress.LocalHost(27939));
+			Role = NetRole.Client;
+			ClientManager = SteamNetworkingSockets.ConnectRelay<ClientSocket>(target);
 			ClientManager.Networker = this;
 		}
 
@@ -39,9 +35,9 @@ namespace Rabid.Netcode.Steam
 
 		public void SendToServer(IntPtr data, int size, SendType type = SendType.Unreliable)
 		{
-			if(Role == NetRole.Server)
+			if(Role != NetRole.Client)
 			{
-				throw new Exception("Server attempted to send data to itself");
+				return;
 			}
 
 			ClientManager.Connection.SendMessage(data, size, type);

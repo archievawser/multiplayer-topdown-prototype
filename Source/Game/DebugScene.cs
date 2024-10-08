@@ -26,8 +26,15 @@ namespace Rabid
 			for (int i = -11; i < 11; i++) for (int j = -6; j < 6; j++)
 				mSheet.Edit(0, new GridCoord(i, j), new GridCoord(4, 0));
 
-			World.Instance.Networker.Connect();
-			World.Instance.Networker.Connect(SteamClient.SteamId);
+			World.Instance.Networker.Host();
+
+			Player player = new Player();
+			player.IsLocallyOwned = true;
+			player.SetNetIdentity(IdHelper.GetNextId());
+
+			AddEntity(player);
+			player.Prepare();
+			player.Start();
 
 			base.Start();
 		}

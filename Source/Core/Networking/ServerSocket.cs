@@ -46,7 +46,9 @@ namespace Rabid.Netcode.Steam
 			base.OnDisconnected(connection, info);
 		}
 
-		public override unsafe void OnMessage(Connection connection, NetIdentity identity, nint data, int size, long messageNum, long recvTime, int channel)
+		public override unsafe void OnMessage(Connection connection, NetIdentity identity, nint data, int size, long messageNum, long recvTime, int channel) => OnMessageBody(data, size);
+		
+		public unsafe void OnMessageBody(nint data, int size)
 		{
 			UnmanagedMemoryStream stream = new UnmanagedMemoryStream((byte*)data, size);
 			NetBinaryReader reader = new NetBinaryReader(stream);

@@ -70,13 +70,16 @@ namespace Rabid
 		}
 
 		[RunOnServer]
-		public void SetServerPosition(Vector2 position) {}
+		public void SetServerPosition(Vector2 position) { }
 		public void SetServerPosition_Impl(SteamId sender, NetBinaryReader data)
 		{
 			Transform.Position = data.ReadVector2();
 
 			foreach(var v in World.Instance.Networker.Connections.Keys)
 			{
+				if (v == sender)
+					continue;
+
 				BroadcastPosition(v, Transform.Position);
 			}
 			//BroadcastPosition(Transform.Position);

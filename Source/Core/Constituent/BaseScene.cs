@@ -42,7 +42,8 @@ namespace Rabid
 
 		public virtual void Update(float dt)
 		{
-			for(int i = 0; i < mEntities.Count; i++)
+			int c = mEntities.Count;
+			for (int i = 0; i < c; i++)
 			{
 				mEntities[i].Update(dt);
 			}

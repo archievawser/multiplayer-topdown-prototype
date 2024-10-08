@@ -33,9 +33,11 @@ namespace Rabid
 			player.IsLocallyOwned = local;
 			player.SetNetIdentity(id);
 
-			World.Instance.CurrentScene.AddEntity(player);
+			player.ParentScene = World.Instance.CurrentScene;
 			player.Prepare();
 			player.Start();
+			World.Instance.CurrentScene.AddEntity(player);
+			
 		}
 	}
 }

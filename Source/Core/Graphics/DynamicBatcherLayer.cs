@@ -35,18 +35,19 @@ namespace Rabid
 
 			bool dataChanged = false;
 
+			int index = 0;
+
 			if(mFullRebuildNeeded)
 			{
-				int index = 0;
 				dataChanged = true;
-				foreach(int key in mElements.Keys)
+
+				foreach (int key in mElements.Keys)
 				{
 					WriteQuadToUser(index++, new Vector3(mElements[key].Position, 0), mElements[key].Size, mElements[key].UvOffset);
 				}
 			}
 			else
 			{
-				int index = 0;
 				foreach (int key in mElements.Keys)
 				{
 					if (mElements[key].RebuildNeeded)
@@ -96,8 +97,8 @@ namespace Rabid
 			int vertexOffset = BatchElement.VertexCount * elementIndex;
 			int indexOffset = BatchElement.IndexCount * elementIndex;
 
-			Vector3 positionMin = positionOffset - new Vector3(size / 2, 0);
-			Vector3 positionMax = positionOffset + new Vector3(size / 2, 0);
+			Vector3 positionMin = positionOffset - new Vector3(size / 2.0f, 0);
+			Vector3 positionMax = positionOffset + new Vector3(size / 2.0f, 0);
 			Vector2 uvMin = uvOffset * mTileset.TileUv;
 			Vector2 uvMax = uvMin + (size / new Vector2(Globals.TileWidth, Globals.TileHeight)) * mTileset.TileUv;
 

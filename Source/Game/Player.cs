@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -63,9 +64,18 @@ namespace Rabid
 			Transform.Position += direction * dt * 50f;
 			Camera.Current.Transform.Translation = Vector3.Lerp(Camera.Current.Transform.Translation, -new Vector3(Transform.Position, 0), 10f * dt);
 
-			
-			SetServerPosition(Transform.Position);
-			
+			if(World.Instance.Networker.Role == NetRole.Host)
+			{
+				foreach (var v in World.Instance.Networker.Connections.Keys)
+				{
+					BroadcastPosition(v, Transform.Position);
+				}
+			}
+			else
+			{
+				SetServerPosition(Transform.Position);
+			}
+
 			base.Update(dt);
 		}
 

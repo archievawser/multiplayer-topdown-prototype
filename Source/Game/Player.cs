@@ -30,6 +30,9 @@ namespace Rabid
 
 		public override void Update(float dt)
 		{
+			// pushed to top so that components update properly
+			base.Update(dt);
+
 			if (!IsLocallyOwned)
 				return;
 
@@ -75,8 +78,6 @@ namespace Rabid
 			{
 				SetServerPosition(Transform.Position);
 			}
-
-			base.Update(dt);
 		}
 
 		[RunOnServer]

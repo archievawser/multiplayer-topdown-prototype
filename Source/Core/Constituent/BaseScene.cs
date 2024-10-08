@@ -42,9 +42,9 @@ namespace Rabid
 
 		public virtual void Update(float dt)
 		{
-			foreach(Entity entity in mEntities)
+			for(int i = 0; i < mEntities.Count; i++)
 			{
-				entity.Update(dt);
+				mEntities[i].Update(dt);
 			}
 		}
 		

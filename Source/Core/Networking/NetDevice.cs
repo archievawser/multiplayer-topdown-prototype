@@ -33,7 +33,7 @@ namespace Rabid.Netcode.Steam
 			ServerManager?.Receive();
 		}
 
-		public void SendToServer(IntPtr data, int size, SendType type = SendType.Unreliable)
+		public void SendToServer(IntPtr data, int size, SendType type = SendType.Reliable)
 		{
 			if(Role != NetRole.Client)
 			{
@@ -43,7 +43,7 @@ namespace Rabid.Netcode.Steam
 			ClientManager.Connection.SendMessage(data, size, type);
 		}
 
-		public void SendToClient(SteamId clientId, IntPtr data, int size, SendType type = SendType.Unreliable)
+		public void SendToClient(SteamId clientId, IntPtr data, int size, SendType type = SendType.Reliable)
 		{
 			if(Role == NetRole.Client)
 			{
@@ -59,7 +59,7 @@ namespace Rabid.Netcode.Steam
 			}
 		}
 
-		public void SendToAllClients(IntPtr data, int size, SteamId[] exceptions = null, SendType type = SendType.Unreliable)
+		public void SendToAllClients(IntPtr data, int size, SteamId[] exceptions = null, SendType type = SendType.Reliable)
 		{
 			if(Role == NetRole.Client)
 			{

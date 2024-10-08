@@ -36,8 +36,6 @@ namespace Rabid.Netcode.Steam
 				// tell connection that a player joined (and the player's NetId)
 				RpcTesting.PlayerJoined(v.Key, playerId);
 			}
-
-			
 			
 			RpcTesting.PossessPlayer(info.Identity.SteamId, playerId);
 

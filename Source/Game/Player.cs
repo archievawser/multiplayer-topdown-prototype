@@ -71,7 +71,7 @@ namespace Rabid
 
 		[RunOnServer]
 		public void SetServerPosition(Vector2 position) {}
-		public void SetServerPosition_Impl(NetBinaryReader data)
+		public void SetServerPosition_Impl(SteamId sender, NetBinaryReader data)
 		{
 			Transform.Position = data.ReadVector2();
 

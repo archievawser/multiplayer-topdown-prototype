@@ -16,14 +16,7 @@ namespace Rabid
 		public static void PossessPlayer_Impl(NetBinaryReader args)
 		{
 			NetId id = args.ReadByte();
-			Player player = new Player();
-			player.IsLocallyOwned = true;
-			player.SetNetIdentity(id);
-
-			// TODO: make smarter
-			World.Instance.CurrentScene.AddEntity(player);
-			player.Prepare();
-			player.Start();
+			CreatePlayer(id, true);
 		}
 
 		[RunOnClient]
@@ -31,8 +24,13 @@ namespace Rabid
 		public static void PlayerJoined_Impl(NetBinaryReader args) 
 		{
 			NetId id = args.ReadByte();
+			CreatePlayer(id, false);
+		}
+
+		public static void CreatePlayer(NetId id, bool local)
+		{
 			Player player = new Player();
-			player.IsLocallyOwned = false;
+			player.IsLocallyOwned = local;
 			player.SetNetIdentity(id);
 
 			World.Instance.CurrentScene.AddEntity(player);

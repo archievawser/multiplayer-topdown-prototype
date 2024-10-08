@@ -28,13 +28,7 @@ namespace Rabid
 
 			World.Instance.Networker.Host();
 
-			Player player = new Player();
-			player.IsLocallyOwned = true;
-			player.SetNetIdentity(IdHelper.GetNextId());
-
-			AddEntity(player);
-			player.Prepare();
-			player.Start();
+			RpcTesting.CreatePlayer(IdHelper.GetNextId(), true);
 
 			base.Start();
 		}

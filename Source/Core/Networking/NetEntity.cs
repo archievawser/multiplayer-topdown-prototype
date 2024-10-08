@@ -20,6 +20,12 @@ namespace Rabid
 		public static NetEntity Resolve(NetId id)
 		{
 			return mEntityNetRegistry[id];
+		}		
+		
+		public static NetEntity[] GetAll()
+		{
+			// TODO: check performance
+			return mEntityNetRegistry.Values.ToArray();
 		}
 
 		public void SetNetIdentity(NetId id)
@@ -27,6 +33,8 @@ namespace Rabid
 			Id = id;
 			mEntityNetRegistry.Add(id, this);
 		}
+
+
 
 		public override void Prepare()
 		{
@@ -151,50 +159,39 @@ namespace Rabid
 				// RPCs can't be generic
 				if (method.IsGenericMethod)
 					continue;
-
+				
 				// check if RPC
-				if (method.GetCustomAttribute<RunOnServer>() != null)
+				switch (UnboundRpcService.GetRpcType(method))
 				{
-					SetupRunOnServerRpc(method);
-				}
-				else if (method.GetCustomAttribute<Multicast>() != null)
-				{
-					SetupMulticastRpc(method);
-				}
-				else if (method.GetCustomAttribute<RunOnClient>() != null)
-				{
-					SetupRunOnClientRpc(method);
-				}
-				else
-				{
-					continue;
+					case UnboundRpcService.RpcType.RunOnServer:
+						Application.Instance.Harmony.Patch(method, new HarmonyMethod(RosRpcPrefix));
+						ServerRpcRegistry[rpcIndex] = (UnboundRpcService.ServerRpcImplementation)Delegate.CreateDelegate(typeof(UnboundRpcService.ServerRpcImplementation), this, GetType().GetMethod(method.Name + "_Impl"));
+						break;
+
+					case UnboundRpcService.RpcType.Multicast:
+						Application.Instance.Harmony.Patch(method, new HarmonyMethod(MulticastRpcPrefix));
+						RpcRegistry[rpcIndex] = (UnboundRpcService.RpcImplementation)Delegate.CreateDelegate(typeof(UnboundRpcService.RpcImplementation), this, GetType().GetMethod(method.Name + "_Impl"));
+						break;
+
+					case UnboundRpcService.RpcType.RunOnClient:
+						Application.Instance.Harmony.Patch(method, new HarmonyMethod(RunOnClientRpcPrefix));
+						RpcRegistry[rpcIndex] = (UnboundRpcService.RpcImplementation)Delegate.CreateDelegate(typeof(UnboundRpcService.RpcImplementation), this, GetType().GetMethod(method.Name + "_Impl"));
+						break;
+
+					case UnboundRpcService.RpcType.None:
+						continue;
 				}
 
 				// add rpc implementation (orig name + "_Impl") 
-				RpcRegistry[rpcIndex] = (UnboundRpcService.RpcImplementation)Delegate.CreateDelegate(typeof(UnboundRpcService.RpcImplementation), this, GetType().GetMethod(method.Name + "_Impl"));
 				RpcIdentifierRegistry[method.Name] = rpcIndex;
 
 				rpcIndex++;
 			}
 		}
 
-		private void SetupRunOnServerRpc(MethodInfo method)
-		{
-			Application.Instance.Harmony.Patch(method, new HarmonyMethod(RosRpcPrefix));
-		}
-
-		private void SetupMulticastRpc(MethodInfo method)
-		{
-			Application.Instance.Harmony.Patch(method, new HarmonyMethod(MulticastRpcPrefix));
-		}
-
-		private void SetupRunOnClientRpc(MethodInfo method)
-		{
-			Application.Instance.Harmony.Patch(method, new HarmonyMethod(RunOnClientRpcPrefix));
-		}
-
 		public Dictionary<string, NetId> RpcIdentifierRegistry = new Dictionary<string, NetId>();
 		public Dictionary<NetId, UnboundRpcService.RpcImplementation> RpcRegistry = new Dictionary<NetId, UnboundRpcService.RpcImplementation>();
+		public Dictionary<NetId, UnboundRpcService.ServerRpcImplementation> ServerRpcRegistry = new Dictionary<NetId, UnboundRpcService.ServerRpcImplementation>();
 		public NetId Id = IdHelper.GetNextId();
 		public bool IsLocallyOwned;
 		private static Dictionary<NetId, NetEntity> mEntityNetRegistry = new Dictionary<NetId, NetEntity>();

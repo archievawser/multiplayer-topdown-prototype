@@ -13,7 +13,7 @@ namespace Rabid
 {
 	public static class UnboundRpcService
 	{
-		private enum RpcType
+		public enum RpcType
 		{
 			None,
 			RunOnServer,
@@ -35,21 +35,23 @@ namespace Rabid
 						{
 							case RpcType.RunOnServer:
 								Application.Instance.Harmony.Patch(method, new HarmonyMethod(RunOnServerRpcPrefix));
+								ServerRpcRegistry[rpcIndex] = (ServerRpcImplementation)Delegate.CreateDelegate(typeof(ServerRpcImplementation), type.GetMethod(method.Name + "_Impl"));
 								break;
 
 							case RpcType.Multicast:
 								Application.Instance.Harmony.Patch(method, new HarmonyMethod(MulticastRpcPrefix));
+								RpcRegistry[rpcIndex] = (RpcImplementation)Delegate.CreateDelegate(typeof(RpcImplementation), type.GetMethod(method.Name + "_Impl"));
 								break;
 
 							case RpcType.RunOnClient:
 								Application.Instance.Harmony.Patch(method, new HarmonyMethod(RunOnClientRpcPrefix));
+								RpcRegistry[rpcIndex] = (RpcImplementation)Delegate.CreateDelegate(typeof(RpcImplementation), type.GetMethod(method.Name + "_Impl"));
 								break;
 
 							case RpcType.None:
 								continue;
 						}
 
-						RpcRegistry[rpcIndex] = (RpcImplementation)Delegate.CreateDelegate(typeof(RpcImplementation), type.GetMethod(method.Name + "_Impl"));
 						RpcIdentifierRegistry[method.Name] = rpcIndex;
 
 						rpcIndex++;
@@ -130,7 +132,7 @@ namespace Rabid
 			return;
 		}
 
-		private static RpcType GetRpcType(MethodInfo method)
+		public static RpcType GetRpcType(MethodInfo method)
 		{
 			if (method.GetCustomAttribute<RunOnServer>() != null)
 				return RpcType.RunOnServer;
@@ -145,8 +147,10 @@ namespace Rabid
 			return RpcType.None;
 		}
 
-		public static Dictionary<NetId, UnboundRpcService.RpcImplementation> RpcRegistry = new Dictionary<NetId, UnboundRpcService.RpcImplementation>();
 		public static Dictionary<string, NetId> RpcIdentifierRegistry = new Dictionary<string, NetId>();
+		public static Dictionary<NetId, UnboundRpcService.RpcImplementation> RpcRegistry = new Dictionary<NetId, UnboundRpcService.RpcImplementation>();
 		public delegate void RpcImplementation(NetBinaryReader data);
+		public static Dictionary<NetId, UnboundRpcService.ServerRpcImplementation> ServerRpcRegistry = new Dictionary<NetId, UnboundRpcService.ServerRpcImplementation>();
+		public delegate void ServerRpcImplementation(SteamId sender, NetBinaryReader data);
 	}
 }

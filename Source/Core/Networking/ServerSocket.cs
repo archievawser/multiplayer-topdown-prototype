@@ -20,14 +20,24 @@ namespace Rabid.Netcode.Steam
 			Networker.Connections[info.Identity.SteamId] = connection;
 
 			NetId playerId = IdHelper.GetNextId();
+			
+			foreach(var v in NetEntity.GetAll())
+			{
+				RpcTesting.PlayerJoined(info.Identity.SteamId, v.Id);
+			}
+
+			RpcTesting.CreatePlayer(playerId, false);
 
 			foreach (var v in Networker.Connections)
 			{
 				if (v.Key == info.Identity.SteamId)
 					continue;
 
+				// tell connection that a player joined (and the player's NetId)
 				RpcTesting.PlayerJoined(v.Key, playerId);
 			}
+
+			
 			
 			RpcTesting.PossessPlayer(info.Identity.SteamId, playerId);
 
@@ -46,9 +56,7 @@ namespace Rabid.Netcode.Steam
 			base.OnDisconnected(connection, info);
 		}
 
-		public override unsafe void OnMessage(Connection connection, NetIdentity identity, nint data, int size, long messageNum, long recvTime, int channel) => OnMessageBody(data, size);
-		
-		public unsafe void OnMessageBody(nint data, int size)
+		public override unsafe void OnMessage(Connection connection, NetIdentity identity, nint data, int size, long messageNum, long recvTime, int channel)
 		{
 			UnmanagedMemoryStream stream = new UnmanagedMemoryStream((byte*)data, size);
 			NetBinaryReader reader = new NetBinaryReader(stream);
@@ -62,7 +70,7 @@ namespace Rabid.Netcode.Steam
 						// the key of the RPC in the unbound rpc registry
 						NetId rpcId = reader.ReadByte();
 
-						UnboundRpcService.RpcRegistry[rpcId](reader);
+						UnboundRpcService.ServerRpcRegistry[rpcId](identity.SteamId.Value, reader);
 						break;
 					}
 				case NetMessageType.BoundRpc:
@@ -75,7 +83,7 @@ namespace Rabid.Netcode.Steam
 						NetId rpcId = reader.ReadByte();
 
 						NetEntity rpcObject = NetEntity.Resolve(rpcObjectId);
-						rpcObject.RpcRegistry[rpcId](reader);
+						rpcObject.ServerRpcRegistry[rpcId](identity.SteamId.Value, reader);
 						break;
 					}
 			}

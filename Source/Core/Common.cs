@@ -9,7 +9,9 @@ namespace Rabid
 {
 	public static class Globals
 	{
-		public static uint TileWidth = 16;
-		public static uint TileHeight = 16;
+		public static int TileWidth = 16;
+		public static int TileHeight = 16;
+		public static int WindowWidth = 1920;
+		public static int WindowHeight = 1080;
 	}
 }

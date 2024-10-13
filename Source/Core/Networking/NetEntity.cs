@@ -71,8 +71,6 @@ namespace Rabid
 			writer.Write(__instance.Id.Value);
 			writer.Write(__instance.RpcIdentifierRegistry[__originalMethod.Name]);
 
-			Trace.WriteLine("Sent position as " + __instance.Id.Value);
-
 			foreach (var v in __args)
 			{
 				writer.Write(v);
@@ -192,7 +190,7 @@ namespace Rabid
 		public Dictionary<string, NetId> RpcIdentifierRegistry = new Dictionary<string, NetId>();
 		public Dictionary<NetId, UnboundRpcService.RpcImplementation> RpcRegistry = new Dictionary<NetId, UnboundRpcService.RpcImplementation>();
 		public Dictionary<NetId, UnboundRpcService.ServerRpcImplementation> ServerRpcRegistry = new Dictionary<NetId, UnboundRpcService.ServerRpcImplementation>();
-		public NetId Id = IdHelper.GetNextId();
+		public NetId Id = -1;
 		public bool IsLocallyOwned;
 		private static Dictionary<NetId, NetEntity> mEntityNetRegistry = new Dictionary<NetId, NetEntity>();
 	}

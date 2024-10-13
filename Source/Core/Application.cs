@@ -22,8 +22,8 @@ namespace Rabid
 
 			Content.RootDirectory = "Assets";
 			GraphicsDeviceManager = new GraphicsDeviceManager(this);
-			GraphicsDeviceManager.PreferredBackBufferWidth = 1920;
-			GraphicsDeviceManager.PreferredBackBufferHeight = 1080;
+			GraphicsDeviceManager.PreferredBackBufferWidth = Globals.WindowWidth;
+			GraphicsDeviceManager.PreferredBackBufferHeight = Globals.WindowHeight;
 			IsMouseVisible = true;
 			Instance = this;
 			Harmony = new Harmony("rabid.game.harmony");
@@ -33,12 +33,15 @@ namespace Rabid
 
 		protected override void Initialize()
 		{
-			SteamClient.Init(480);
+			SteamClient.Init(480, false);
 			SteamNetworkingUtils.InitRelayNetworkAccess();
 
+			Batcher = new SpriteBatch(GraphicsDeviceManager.GraphicsDevice);
+
+			DrawDebugHelper.Setup(Batcher);
 			UnboundRpcService.PatchRpcs();
 
-			Camera = new Camera(1920, 1080);
+			Camera = new Camera(Globals.WindowWidth, Globals.WindowHeight);
 
 			const string atlasName = "Textures/Atlas";
 			new Tileset(AssetManager<Texture2D>.Retreive(atlasName));
@@ -54,6 +57,7 @@ namespace Rabid
 			GraphicsDeviceManager.GraphicsDevice.Clear(Color.Black);
 
 			SteamClient.RunCallbacks();
+
 			GameWorld.PreUpdate();
 			GameWorld.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 			GameWorld.PostUpdate();
@@ -65,6 +69,7 @@ namespace Rabid
 		public Harmony Harmony;
 		public Camera Camera;
 		public GraphicsDeviceManager GraphicsDeviceManager;
+		public SpriteBatch Batcher;
 		public World GameWorld;
 		private Effect mDebugEffect;
 		private Tilesheet mSheet;

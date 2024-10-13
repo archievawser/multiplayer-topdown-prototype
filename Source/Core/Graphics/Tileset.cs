@@ -18,7 +18,7 @@ namespace Rabid
 				throw new ArgumentException("Tileset received invalid texture atlas");
 
 			Columns = (uint)atlas.Width / (uint)Globals.TileWidth;
-			Rows = (uint)atlas.Height / Globals.TileHeight;
+			Rows = (uint)atlas.Height / (uint)Globals.TileHeight;
 
 			TileUv = new Vector2(1f / Columns, 1f / Rows);
 			Texture = atlas;

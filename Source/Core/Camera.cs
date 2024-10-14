@@ -25,7 +25,7 @@ namespace Rabid
 
 		public Rectangle GetFrustum()
 		{
-			return new Rectangle(0, 0, 100, 100);//-(int)(Transform.Translation.X + mWindowWidth / 2), (int)(Transform.Translation.Y + mWindowHeight / 2), mWindowWidth / 2, mWindowHeight / 2);
+			return new Rectangle((int)(Transform.Translation.X), (int)(Transform.Translation.Y), mWindowWidth, mWindowHeight);
 		}
 
 		public static Camera Current;

@@ -64,6 +64,14 @@ namespace Rabid
 			return entity;
 		}
 
+		public T AddEntity<T>() where T : Entity, new()
+		{
+			T entity = new T();
+			entity.ParentScene = this;
+			mEntities.Add(entity);
+			return entity;
+		}
+
 		public void RemoveEntity(Entity entity)
 		{
 			mEntities.Remove(entity);

@@ -58,9 +58,13 @@ namespace Rabid
 
 			SteamClient.RunCallbacks();
 
+			Batcher.Begin();
+
 			GameWorld.PreUpdate();
 			GameWorld.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 			GameWorld.PostUpdate();
+
+			Batcher.End();
 
 			base.Update(gameTime);
 		}

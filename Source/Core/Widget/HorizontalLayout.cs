@@ -30,8 +30,6 @@ namespace Rabid
 			if (mRebuildNeeded)
 				Rebuild();
 
-			mSlots.ForEach(v => v.Element.Render());
-
 			base.Render();
 		}
 
@@ -42,13 +40,13 @@ namespace Rabid
 		/// <param name="element"></param>
 		public void AddSlot(int key, Widget element)
 		{
-			base.AddWidget(element);
-
 			mSlots.Add(new HorizontalLayoutSlot()
 			{
 				Key = key,
 				Element = element
 			});
+
+			base.AddWidget(element);
 
 			mRebuildNeeded = true;
 		}
@@ -57,13 +55,27 @@ namespace Rabid
 		{
 			Sort();
 
+			float trailingPadding = 0.0f;
 			float xOffset = 0.0f;
+			float yMax = 0.0f;
 
 			for(int i = 0; i < mSlots.Count; i++)
 			{
+				trailingPadding = mSlots[i].Element.Padding.X;
+
 				mSlots[i].Element.Position = new Vector2(xOffset, 0);
-				xOffset += mSlots[i].Element.Size.X;
+				xOffset += mSlots[i].Element.Size.X + trailingPadding;
+
+				float slotYSize = mSlots[i].Element.Size.Y + mSlots[i].Element.Padding.Y;
+				if (slotYSize > yMax)
+				{
+					yMax = slotYSize;
+				}
 			}
+
+			xOffset -= trailingPadding;
+
+			Size = new Vector2(xOffset, yMax);
 		}
 
 		private void Sort()

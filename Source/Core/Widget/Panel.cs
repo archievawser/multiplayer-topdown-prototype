@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Steamworks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace Rabid
 	///	<br></br>
 	/// Allows layout classes to contain a runtime-variable number of elements
 	/// </summary>
-	class Panel : Widget
+	public class Panel : Widget
 	{
 		public override void Render()
 		{
@@ -20,25 +21,27 @@ namespace Rabid
 			base.Render();
 		}
 
-		protected T AddWidget<T>() where T : Widget, new()
+		public T AddWidget<T>() where T : Widget, new()
 		{
 			T result = new T();
+			result.SetMaster(Master);
 			mWidgets.Add(result);
 			return result;
 		}
 
-		protected T AddWidget<T>(T widget) where T : Widget
+		public T AddWidget<T>(T widget) where T : Widget
 		{
+			widget.SetMaster(Master);
+			widget.SetParent(this);
 			mWidgets.Add(widget);
 			return widget;
 		}
 
-		protected void RemoveWidget<T>(T widget) where T : Widget
+		public void RemoveWidget<T>(T widget) where T : Widget
 		{
 			mWidgets.Remove(widget);
 		}
 
-		protected List<Widget> mWidgets
-		{ get; set; }
+		protected List<Widget> mWidgets = new List<Widget>();
 	}
 }

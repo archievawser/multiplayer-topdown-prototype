@@ -1,24 +1,49 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Rabid
 {
-	class MenuTest : Widget
+	public class HotbarSlot : Widget
 	{
-		MenuTest()
+		public HotbarSlot()
 		{
-			Position = new Vector2(0, 0);
-			Size = new Vector2(Globals.WindowWidth, Globals.WindowHeight);
+			Size = new Vector2(90, 90);
+			Padding = new Vector2(10, 10);
 		}
 
 		public override void Render()
 		{
+			Master.Batcher.Draw(
+				AssetManager<Texture2D>.Retreive("Textures/White"),
+				new Rectangle((int)ComputedPosition.X, (int)ComputedPosition.Y, (int)Size.X, (int)Size.Y),
+				Color.White
+			);
+		}
+	}
 
-			base.Render();
+	public class MenuTest : WidgetMaster
+	{
+		public MenuTest()
+		{
+			HorizontalLayout layout = Canvas.AddWidget<HorizontalLayout>();
+			
+			for (int i = 0; i < 20; i++)
+			{
+				layout.AddSlot(i, new HotbarSlot());
+			}
+
+			layout.Position = new Vector2(10, Globals.WindowHeight);
+			layout.Anchor = new Vector2(0f, 1f);
+
+			Image e = new Image(Tileset.Get(0).Elements["Grass"]);
+			e.Size = new Vector2(100, 100);
+			Canvas.AddWidget(e);
 		}
 	}
 }

@@ -54,6 +54,9 @@ namespace Rabid
 			return new Vector2(coord.Column, coord.Row) * TileUv;
 		}
 
+		/// <summary>
+		/// Attempts to find and load a metadata file which describes the tileset's elements
+		/// </summary>
 		public void TryLoadMetadata()
 		{
 			string metaName = Texture.Name + ".meta.xml";
@@ -69,21 +72,6 @@ namespace Rabid
 					Elements.Add(element.Name, element);
 				}
 			}
-		}
-
-		public TilesetElement ReadElement(XmlNode node)
-		{
-			return new TilesetElement(
-				node.Attributes.GetNamedItem("key").Value,
-				new GridCoord(
-					Int32.Parse(node.SelectSingleNode("./position").Attributes.GetNamedItem("col").Value), 
-					Int32.Parse(node.SelectSingleNode("./position").Attributes.GetNamedItem("row").Value)
-				),
-				new GridCoord(
-					Int32.Parse(node.SelectSingleNode("./span").Attributes.GetNamedItem("col").Value),
-					Int32.Parse(node.SelectSingleNode("./span").Attributes.GetNamedItem("row").Value)
-				)
-			);
 		}
 
 		public void SerializeTo(BinaryWriter stream)
@@ -108,6 +96,21 @@ namespace Rabid
 		{
 			return float.IsInteger((float)atlas.Height / (float)Globals.TileHeight)
 				&& float.IsInteger((float)atlas.Width / (float)Globals.TileWidth);
+		}		
+		
+		private TilesetElement ReadElement(XmlNode node)
+		{
+			return new TilesetElement(
+				node.Attributes.GetNamedItem("key").Value,
+				new GridCoord(
+					Int32.Parse(node.SelectSingleNode("./position").Attributes.GetNamedItem("col").Value), 
+					Int32.Parse(node.SelectSingleNode("./position").Attributes.GetNamedItem("row").Value)
+				),
+				new GridCoord(
+					Int32.Parse(node.SelectSingleNode("./span").Attributes.GetNamedItem("col").Value),
+					Int32.Parse(node.SelectSingleNode("./span").Attributes.GetNamedItem("row").Value)
+				)
+			);
 		}
 
 		public static List<Tileset> Tilesets = new List<Tileset>();

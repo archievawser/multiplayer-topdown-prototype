@@ -17,6 +17,7 @@ namespace Rabid
 			Batcher = AddEntity(new DynamicBatcherLayer(AssetManager<Effect>.Retreive("Effects/FlatTextured")));
 			//mPlayers = AddEntity(new Player());
 			mSheet = AddEntity(new Tilesheet(AssetManager<Effect>.Retreive("Effects/FlatTextured")));
+			Menu = AddEntity<MenuTest>();
 
 			base.Prepare();
 		}
@@ -40,6 +41,7 @@ namespace Rabid
 		}
 
 		public DynamicBatcherLayer Batcher;
+		public MenuTest Menu;
 		//private Player mPlayers;
 		private Tilesheet mSheet;
 	}

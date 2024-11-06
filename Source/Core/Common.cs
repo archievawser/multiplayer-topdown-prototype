@@ -11,7 +11,7 @@ namespace Rabid
 	{
 		public static int TileWidth = 16;
 		public static int TileHeight = 16;
-		public static int WindowWidth = 1920;
-		public static int WindowHeight = 1080;
+		public static int WindowWidth = 2560;
+		public static int WindowHeight = 1440;
 	}
 }

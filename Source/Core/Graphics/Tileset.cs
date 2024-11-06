@@ -109,7 +109,8 @@ namespace Rabid
 				new GridCoord(
 					Int32.Parse(node.SelectSingleNode("./span").Attributes.GetNamedItem("col").Value),
 					Int32.Parse(node.SelectSingleNode("./span").Attributes.GetNamedItem("row").Value)
-				)
+				),
+				Int32.Parse(node.Attributes.GetNamedItem("frames")?.Value ?? "1")
 			);
 		}
 

@@ -33,17 +33,17 @@ namespace Rabid
 		{
 			HorizontalLayout layout = Canvas.AddWidget<HorizontalLayout>();
 			
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < 6; i++)
 			{
 				layout.AddSlot(i, new HotbarSlot());
 			}
 
-			layout.Position = new Vector2(10, Globals.WindowHeight);
-			layout.Anchor = new Vector2(0f, 1f);
+			layout.Position = new Vector2(Globals.WindowWidth / 2, Globals.WindowHeight);
+			layout.Anchor = new Vector2(0.5f, 1f);
 
-			Image e = new Image(Tileset.Get(0).Elements["Grass"]);
+			/*Image e = new Image(Tileset.Get(0).Elements["Grass"]);
 			e.Size = new Vector2(100, 100);
-			Canvas.AddWidget(e);
+			Canvas.AddWidget(e);*/
 		}
 	}
 }

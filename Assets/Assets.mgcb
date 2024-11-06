@@ -19,6 +19,12 @@
 /processorParam:DebugMode=Auto
 /build:Effects/FlatTextured.fx
 
+#begin Effects/GrassTest.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/GrassTest.fx
+
 #begin Textures/Atlas.meta.xml
 /copy:Textures/Atlas.meta.xml
 
@@ -33,6 +39,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/atlas.png;Textures/Atlas.png
+
+#begin Textures/color-map-test.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/color-map-test.png
 
 #begin Textures/White.png
 /importer:TextureImporter

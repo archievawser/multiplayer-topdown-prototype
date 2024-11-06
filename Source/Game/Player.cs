@@ -49,19 +49,19 @@ namespace Rabid
 
 			if(direction.X > 0)
 			{
-				Sprite.SetTexture(Tileset.Get(0).Elements["PlayerIdleRight"]);
+				Sprite.SetTexture("PlayerIdleRight");
 			}
 			else if(direction.X < 0)
 			{
-				Sprite.SetTexture(Tileset.Get(0).Elements["PlayerIdleLeft"]);
+				Sprite.SetTexture("PlayerIdleLeft");
 			} 
 			else if(direction.Y > 0)
 			{
-				Sprite.SetTexture(Tileset.Get(0).Elements["PlayerIdleUp"]);
+				Sprite.SetTexture("PlayerIdleUp");
 			}
 			else if(direction.Y < 0)
 			{
-				Sprite.SetTexture(Tileset.Get(0).Elements["PlayerIdleDown"]);
+				Sprite.SetTexture("PlayerIdleDown");
 			}
 			
 			Transform.Position += direction * dt * 50f;
@@ -104,7 +104,6 @@ namespace Rabid
 		}
 
 
-		
 		public TransformComponent Transform;
 		public SpriteComponent Sprite;
 	}

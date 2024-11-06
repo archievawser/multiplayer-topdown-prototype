@@ -37,6 +37,8 @@ namespace Rabid
 				mDrawQueue.Sort(DrawOrderSorter);
 			}
 
+			Application.Instance.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+
 			foreach (IDrawable drawable in mDrawQueue)
 			{
 				drawable.Draw();

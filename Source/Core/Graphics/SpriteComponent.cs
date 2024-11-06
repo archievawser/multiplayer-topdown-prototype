@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Steamworks.Data;
 
 namespace Rabid
 {
@@ -9,8 +10,8 @@ namespace Rabid
 	{
 		public SpriteComponent(GridCoord texCoord, GridCoord size)
 		{
-			mTilesetCoord = texCoord;
-			mSize = size;
+			mElement.TexCoord = texCoord;
+			mElement.Size = size;
 		}
 
 		public SpriteComponent(TilesetElement element)
@@ -23,10 +24,23 @@ namespace Rabid
 		{
 		}
 
-		public void SetTexture(TilesetElement element)
+		public void SetTexture(string name)
 		{
-			mTilesetCoord = element.TexCoord;
-			mSize = element.Size;
+			mCurrentAnimName = "none";
+			mCurrentAnimFrame = 0;
+
+			mElement = Tileset.Get(0).Elements[name];
+		}
+
+		public void SetAnimation(string name)
+		{
+			if(name == mCurrentAnimName)
+				return;
+
+			mCurrentAnimName = name;
+			mTimeSinceLastKeyframe = 0;
+
+			mElement = Tileset.Get(0).Elements[name];
 		}
 
 		public override void Prepare()
@@ -44,19 +58,39 @@ namespace Rabid
 		}
 
 		public override void Update(float dt)
-		{			
+		{
+			if(mElement.FrameCount > 1)
+			{
+				const double frameLength = 1f / 8f;
+				mTimeSinceLastKeyframe += dt;
+			
+				if(mTimeSinceLastKeyframe > frameLength)
+				{
+					mTimeSinceLastKeyframe = 0;
+					mCurrentAnimFrame++;
+
+					if(mCurrentAnimFrame >= mElement.FrameCount)
+					{
+						mCurrentAnimFrame = 0;
+					}
+				}
+			}
+
+
 			mDrawHandle.Set(
 				new Vector2(mTransformComponent.Position.X, mTransformComponent.Position.Y),
-				new Vector2(mSize.Column, mSize.Row) * new Vector2(Globals.TileWidth, Globals.TileHeight),
-				new Vector2(mTilesetCoord.Column, mTilesetCoord.Row)
+				new Vector2(mElement.Size.Column, mElement.Size.Row) * new Vector2(Globals.TileWidth, Globals.TileHeight),
+				new Vector2(mElement.TexCoord.Column + mCurrentAnimFrame, mElement.TexCoord.Row)
 			);
 
 			base.Update(dt);
 		}
 
+		private string mCurrentAnimName;
+		private int mCurrentAnimFrame = 0;
+		private double mTimeSinceLastKeyframe;
 		private TransformComponent mTransformComponent;
 		private BatchElementHandle mDrawHandle;
-		private GridCoord mSize;
-		private GridCoord mTilesetCoord;
+		private TilesetElement mElement;
 	}
 }

@@ -1,24 +1,35 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <atlas>
+	
 	<element key="PlayerIdleDown">
 		<position col="0" row="0" />
-		<span col="1" row="2" />
+		<span col="1" row="3" />
 	</element>
+	
+	<element key="PlayerWalkDown" frames="4">
+		<position col="0" row="0" />
+		<span col="1" row="3" />
+	</element>
+	
 	<element key="PlayerIdleUp">
-		<position col="1" row="0" />
-		<span col="1" row="2" />
+		<position col="3" row="0" />
+		<span col="1" row="3" />
 	</element>
+	
 	<element key="PlayerIdleRight">
 		<position col="2" row="0" />
-		<span col="1" row="2" />
+		<span col="1" row="3" />
 	</element>
+	
 	<element key="PlayerIdleLeft">
-		<position col="3" row="0" />
-		<span col="1" row="2" />
+		<position col="1" row="0" />
+		<span col="1" row="3" />
 	</element>
+	
 	<element key="Grass">
 		<position col="4" row="0" />
 		<span col="1" row="1" />
 	</element>
+	
 </atlas>

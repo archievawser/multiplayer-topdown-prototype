@@ -16,7 +16,7 @@ namespace Rabid
 		{
 			Batcher = AddEntity(new DynamicBatcherLayer(AssetManager<Effect>.Retreive("Effects/FlatTextured")));
 			//mPlayers = AddEntity(new Player());
-			mSheet = AddEntity(new Tilesheet(AssetManager<Effect>.Retreive("Effects/FlatTextured")));
+			mSheet = AddEntity(new Tilesheet(AssetManager<Effect>.Retreive("Effects/GrassTest")));
 			Menu = AddEntity<MenuTest>();
 
 			base.Prepare();
@@ -25,7 +25,7 @@ namespace Rabid
 		public override void Start()
 		{
 			for (int i = -11; i < 11; i++) for (int j = -6; j < 6; j++)
-				mSheet.Edit(0, new GridCoord(i, j), new GridCoord(4, 0));
+				mSheet.Edit(0, new GridCoord(i, j), new GridCoord(4, j == -6 ? 1 : 0));
 
 			World.Instance.Networker.Host();
 
@@ -37,6 +37,8 @@ namespace Rabid
 		public override void Update(float dt)
 		{
 			Batcher.Effect.Parameters["mvp"].SetValue(Application.Instance.Camera.Transform * Application.Instance.Camera.Projection);
+			AssetManager<Effect>.Retreive("Effects/GrassTest").Parameters["mvp"].SetValue(Application.Instance.Camera.Transform * Application.Instance.Camera.Projection);
+
 			base.Update(dt);
 		}
 

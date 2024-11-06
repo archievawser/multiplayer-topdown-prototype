@@ -49,7 +49,7 @@ namespace Rabid
 				{
 					for(int y = (int)Math.Floor(topLeft.Y); y < (int)Math.Ceiling(bottomRight.Y); y++)
 					{
-						//GetChunk(layer, x, y).Draw();
+						GetChunk(layer, x, y).Draw();
 					}
 				}
 			}

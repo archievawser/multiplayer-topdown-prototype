@@ -12,6 +12,16 @@
 		<span col="1" row="3" />
 	</element>
 	
+	<element key="PlayerWalkRight" frames="9">
+		<position col="0" row="3" />
+		<span col="1" row="3" />
+	</element>
+	
+	<element key="PlayerWalkLeft" frames="9">
+		<position col="0" row="6" />
+		<span col="1" row="3" />
+	</element>
+	
 	<element key="PlayerIdleUp">
 		<position col="3" row="0" />
 		<span col="1" row="3" />

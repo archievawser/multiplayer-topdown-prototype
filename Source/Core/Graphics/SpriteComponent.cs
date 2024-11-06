@@ -61,7 +61,7 @@ namespace Rabid
 		{
 			if(mElement.FrameCount > 1)
 			{
-				const double frameLength = 1f / 8f;
+				const double frameLength = 1f / 12f;
 				mTimeSinceLastKeyframe += dt;
 			
 				if(mTimeSinceLastKeyframe > frameLength)

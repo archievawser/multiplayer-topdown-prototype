@@ -49,11 +49,11 @@ namespace Rabid
 
 			if(direction.X > 0)
 			{
-				Sprite.SetTexture("PlayerIdleRight");
+				Sprite.SetAnimation("PlayerWalkRight");
 			}
 			else if(direction.X < 0)
 			{
-				Sprite.SetTexture("PlayerIdleLeft");
+				Sprite.SetAnimation("PlayerWalkLeft");
 			} 
 			else if(direction.Y > 0)
 			{
@@ -64,7 +64,7 @@ namespace Rabid
 				Sprite.SetTexture("PlayerIdleDown");
 			}
 			
-			Transform.Position += direction * dt * 50f;
+			Transform.Position += direction * dt * 80f;
 			Camera.Current.Transform.Translation = Vector3.Lerp(Camera.Current.Transform.Translation, -new Vector3(Transform.Position, 0), 10f * dt);
 
 			if(World.Instance.Networker.Role == NetRole.Host)

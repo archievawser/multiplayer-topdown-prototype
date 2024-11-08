@@ -32,13 +32,15 @@ namespace Rabid
 			mElement = Tileset.Get(0).Elements[name];
 		}
 
-		public void SetAnimation(string name)
+		public void SetAnimation(string name, bool restart = true)
 		{
 			if(name == mCurrentAnimName)
 				return;
 
 			mCurrentAnimName = name;
-			mTimeSinceLastKeyframe = 0;
+
+			if(restart)
+				mTimeSinceLastKeyframe = 0;
 
 			mElement = Tileset.Get(0).Elements[name];
 		}
@@ -75,7 +77,6 @@ namespace Rabid
 					}
 				}
 			}
-
 
 			mDrawHandle.Set(
 				new Vector2(mTransformComponent.Position.X, mTransformComponent.Position.Y),

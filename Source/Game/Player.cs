@@ -25,6 +25,8 @@ namespace Rabid
 			AddComponent(Sprite);
 			AddComponent(Transform);
 
+			Sprite.SetTexture("PlayerIdleDown");
+
 			base.Prepare();
 		}
 
@@ -45,21 +47,38 @@ namespace Rabid
 			if(dirLengthSqr != 0)
 			{
 				direction /= (float)Math.Sqrt(dirLengthSqr);
+				mLastNonZeroDirection = direction;
 			}
 
 			if(direction.X > 0)
 			{
-				Sprite.SetAnimation("PlayerWalkRight");
+				Sprite.SetAnimation("PlayerWalkRight", false);
 			}
 			else if(direction.X < 0)
 			{
-				Sprite.SetAnimation("PlayerWalkLeft");
+				Sprite.SetAnimation("PlayerWalkLeft", false);
 			} 
 			else if(direction.Y > 0)
 			{
-				Sprite.SetTexture("PlayerIdleUp");
+				Sprite.SetAnimation("PlayerWalkUp", false);
 			}
 			else if(direction.Y < 0)
+			{
+				Sprite.SetAnimation("PlayerWalkDown", false);
+			} 
+			else if(mLastNonZeroDirection.X > 0)
+			{
+				Sprite.SetTexture("PlayerIdleRight");
+			}
+			else if(mLastNonZeroDirection.X < 0)
+			{
+				Sprite.SetTexture("PlayerIdleLeft");
+			}
+			else if(mLastNonZeroDirection.Y > 0)
+			{
+				Sprite.SetTexture("PlayerIdleUp");
+			}
+			else if(mLastNonZeroDirection.Y < 0)
 			{
 				Sprite.SetTexture("PlayerIdleDown");
 			}
@@ -106,5 +125,6 @@ namespace Rabid
 
 		public TransformComponent Transform;
 		public SpriteComponent Sprite;
+		private Vector2 mLastNonZeroDirection;
 	}
 }

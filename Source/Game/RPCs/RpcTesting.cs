@@ -37,7 +37,6 @@ namespace Rabid
 			player.Prepare();
 			player.Start();
 			World.Instance.CurrentScene.AddEntity(player);
-			
 		}
 	}
 }

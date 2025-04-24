@@ -50,37 +50,32 @@ namespace Rabid
 				mLastNonZeroDirection = direction;
 			}
 
-			if(direction.X > 0)
+			if(direction.X != 0)
 			{
-				Sprite.SetAnimation("PlayerWalkRight", false);
+				Sprite.SetAnimation(direction.X > 0 ? "PlayerWalkRight" : "PlayerWalkLeft", false);
+				SetServerAppearance((byte)AppearanceTarget.Animation, direction.X > 0 ? "PlayerWalkRight" : "PlayerWalkLeft");
 			}
-			else if(direction.X < 0)
+			else
 			{
-				Sprite.SetAnimation("PlayerWalkLeft", false);
-			} 
-			else if(direction.Y > 0)
-			{
-				Sprite.SetAnimation("PlayerWalkUp", false);
+				if(direction.Y == 0)
+				{
+					Sprite.SetTexture(mLastNonZeroDirection.X > 0 ? "PlayerIdleRight" : "PlayerIdleLeft");
+					SetServerAppearance((byte)AppearanceTarget.Texture, mLastNonZeroDirection.X > 0 ? "PlayerIdleRight" : "PlayerIdleLeft");
+				}
 			}
-			else if(direction.Y < 0)
+
+			if (direction.Y != 0)
 			{
-				Sprite.SetAnimation("PlayerWalkDown", false);
-			} 
-			else if(mLastNonZeroDirection.X > 0)
-			{
-				Sprite.SetTexture("PlayerIdleRight");
+				Sprite.SetAnimation(direction.Y > 0 ? "PlayerWalkUp" : "PlayerWalkDown", false);
+				SetServerAppearance((byte)AppearanceTarget.Animation, direction.Y > 0 ? "PlayerWalkUp" : "PlayerWalkDown");
 			}
-			else if(mLastNonZeroDirection.X < 0)
+			else
 			{
-				Sprite.SetTexture("PlayerIdleLeft");
-			}
-			else if(mLastNonZeroDirection.Y > 0)
-			{
-				Sprite.SetTexture("PlayerIdleUp");
-			}
-			else if(mLastNonZeroDirection.Y < 0)
-			{
-				Sprite.SetTexture("PlayerIdleDown");
+				if(mLastNonZeroDirection.X == 0)
+				{
+					Sprite.SetTexture(mLastNonZeroDirection.Y > 0 ? "PlayerIdleUp" : "PlayerIdleDown");
+					SetServerAppearance((byte)AppearanceTarget.Texture, mLastNonZeroDirection.Y > 0 ? "PlayerIdleUp" : "PlayerIdleDown");
+				}
 			}
 			
 			Transform.Position += direction * dt * 80f;
@@ -122,6 +117,52 @@ namespace Rabid
 			Transform.Position = data.ReadVector2();
 		}
 
+		public enum AppearanceTarget : byte
+		{ 
+			Animation, Texture 
+		};
+
+		[RunOnServer]
+		public void SetServerAppearance(byte target, string value) { }
+		public void SetServerAppearance_Impl(SteamId sender, NetBinaryReader data)
+		{
+			AppearanceTarget target = (AppearanceTarget)data.ReadByte();
+			string animation = data.ReadString();
+
+			if (target == AppearanceTarget.Animation)
+			{
+				Sprite.SetAnimation(animation, false);
+			}
+			else
+			{
+				Sprite.SetTexture(animation);
+			}
+
+			foreach (var v in World.Instance.Networker.Connections.Keys)
+			{
+				if (v == sender)
+					continue;
+
+				SetClientAnimation(v, (byte)target, animation);
+			}
+		}
+
+		[RunOnClient]
+		public void SetClientAnimation(SteamId target, byte _target, string animation) { }
+		public void SetClientAnimation_Impl(NetBinaryReader data)
+		{
+			AppearanceTarget _target = (AppearanceTarget)data.ReadByte();
+			string animation = data.ReadString();
+
+			if (_target == AppearanceTarget.Animation)
+			{
+				Sprite.SetAnimation(animation, false);
+			}
+			else
+			{
+				Sprite.SetTexture(animation);
+			}
+		}
 
 		public TransformComponent Transform;
 		public SpriteComponent Sprite;

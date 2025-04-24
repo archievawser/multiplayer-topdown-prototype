@@ -27,8 +27,10 @@ namespace Rabid
 			for (int i = -11; i < 11; i++) for (int j = -6; j < 6; j++)
 				mSheet.Edit(0, new GridCoord(i, j), new GridCoord(4, j == -6 ? 1 : 0));
 
+			// to connect as client, change the following call to .Connect() instead of .Host()
 			World.Instance.Networker.Host();
 
+			// and comment this line out
 			RpcTesting.CreatePlayer(IdHelper.GetNextId(), true);
 
 			base.Start();

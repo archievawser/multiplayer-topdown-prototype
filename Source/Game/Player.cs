@@ -53,28 +53,28 @@ namespace Rabid
 			if(direction.X != 0)
 			{
 				Sprite.SetAnimation(direction.X > 0 ? "PlayerWalkRight" : "PlayerWalkLeft", false);
-				SetServerAppearance((byte)AppearanceTarget.Animation, direction.X > 0 ? "PlayerWalkRight" : "PlayerWalkLeft");
+				ReplicateAppearance((byte)AppearanceTarget.Animation, direction.X > 0 ? "PlayerWalkRight" : "PlayerWalkLeft");
 			}
 			else
 			{
 				if(direction.Y == 0)
 				{
 					Sprite.SetTexture(mLastNonZeroDirection.X > 0 ? "PlayerIdleRight" : "PlayerIdleLeft");
-					SetServerAppearance((byte)AppearanceTarget.Texture, mLastNonZeroDirection.X > 0 ? "PlayerIdleRight" : "PlayerIdleLeft");
+					ReplicateAppearance((byte)AppearanceTarget.Texture, mLastNonZeroDirection.X > 0 ? "PlayerIdleRight" : "PlayerIdleLeft");
 				}
 			}
 
 			if (direction.Y != 0)
 			{
 				Sprite.SetAnimation(direction.Y > 0 ? "PlayerWalkUp" : "PlayerWalkDown", false);
-				SetServerAppearance((byte)AppearanceTarget.Animation, direction.Y > 0 ? "PlayerWalkUp" : "PlayerWalkDown");
+				ReplicateAppearance((byte)AppearanceTarget.Animation, direction.Y > 0 ? "PlayerWalkUp" : "PlayerWalkDown");
 			}
 			else
 			{
 				if(mLastNonZeroDirection.X == 0)
 				{
 					Sprite.SetTexture(mLastNonZeroDirection.Y > 0 ? "PlayerIdleUp" : "PlayerIdleDown");
-					SetServerAppearance((byte)AppearanceTarget.Texture, mLastNonZeroDirection.Y > 0 ? "PlayerIdleUp" : "PlayerIdleDown");
+					ReplicateAppearance((byte)AppearanceTarget.Texture, mLastNonZeroDirection.Y > 0 ? "PlayerIdleUp" : "PlayerIdleDown");
 				}
 			}
 			
@@ -107,7 +107,6 @@ namespace Rabid
 
 				BroadcastPosition(v, Transform.Position);
 			}
-			//BroadcastPosition(Transform.Position);
 		}
 
 		[RunOnClient]
@@ -121,6 +120,26 @@ namespace Rabid
 		{ 
 			Animation, Texture 
 		};
+
+
+		public void ReplicateAppearance(byte target, string value)
+		{
+			// If we're already on the server, just replicate straight to clients.
+			if(World.Instance.Networker.Role != NetRole.Client)
+			{
+				foreach (var v in World.Instance.Networker.Connections.Keys)
+				{
+					if (v == SteamClient.SteamId)
+						continue;
+
+					SetClientAppearance(v, (byte)target, value);
+				}
+
+				return;
+			}
+
+			SetServerAppearance(target, value);
+		}
 
 		[RunOnServer]
 		public void SetServerAppearance(byte target, string value) { }
@@ -143,13 +162,13 @@ namespace Rabid
 				if (v == sender)
 					continue;
 
-				SetClientAnimation(v, (byte)target, animation);
+				SetClientAppearance(v, (byte)target, animation);
 			}
 		}
 
 		[RunOnClient]
-		public void SetClientAnimation(SteamId target, byte _target, string animation) { }
-		public void SetClientAnimation_Impl(NetBinaryReader data)
+		public void SetClientAppearance(SteamId target, byte _target, string animation) { }
+		public void SetClientAppearance_Impl(NetBinaryReader data)
 		{
 			AppearanceTarget _target = (AppearanceTarget)data.ReadByte();
 			string animation = data.ReadString();
